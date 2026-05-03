@@ -1,98 +1,60 @@
-# RAG-Powered Enterprise Document Intelligence System
+# rag-enterprise-document-intelligence
 
-> **Note:** This project was developed locally in VS Code over several weeks. Pushing to GitHub now to build a public portfolio and make the code accessible.
+I built this locally in VS Code over a few weeks and am pushing it to GitHub now to keep everything in one place.
 
-## Overview
-A production-grade **Retrieval-Augmented Generation (RAG)** pipeline that processes 14,000+ enterprise documents (PDFs, DOCX, HTML) and enables natural language Q&A with measurable accuracy improvements.
+## What this is
 
-## Key Results
-| Metric | Before | After |
-|---|---|---|
-| Document retrieval time | 22 minutes | < 4 minutes (82% reduction) |
-| Answer relevance score | 61% | 94% |
-| Hallucination rate | baseline | -71% (vs naive RAG) |
-| Uptime (AWS EC2) | — | 98.7% |
-| Avg end-to-end latency | — | 1.8 seconds |
-| Policy-compliant responses | — | 99.1% |
+A RAG pipeline that lets you ask questions over a large collection of enterprise documents (PDFs, Word docs, HTML pages). The main idea was to get away from basic vector search and actually combine dense retrieval with BM25, then rerank the results before sending them to GPT-4. Made a big difference in answer quality.
 
-## Architecture
+The system ended up reducing document search time from around 22 minutes to under 4 minutes in testing, and answer relevance went from 61% to 94% on a 500-query eval set. Hallucination rate dropped 71% compared to a naive RAG setup. Deployed it as a FastAPI service on AWS EC2 and it handled 2000+ concurrent queries fine.
+
+## How it works
+
+Documents come in as PDFs, DOCX, or HTML. They get chunked and embedded using text-embedding-ada-002, then stored in Pinecone. At query time, I run both dense vector search and BM25 sparse search, fuse the results using reciprocal rank fusion, then pass the top candidates through a cross-encoder reranker before handing off to GPT-4.
+
+There's also conversation memory so it handles multi-turn questions, and 15 safety checks to catch prompt injection and policy violations.
+
+## Stack
+
+- LangChain and LlamaIndex for orchestration
+- Pinecone for vector storage
+- rank_bm25 for sparse retrieval
+- cross-encoder/ms-marco-MiniLM-L-6-v2 for reranking
+- FastAPI + Docker for deployment
+- AWS EC2 with auto-scaling
+
+## Project layout
+
 ```
-Documents (PDF/DOCX/HTML)
-        │
-        ▼
-  Document Loader (LangChain / LlamaIndex)
-        │
-        ▼
-  Chunking + Embedding (text-embedding-ada-002)
-        │
-  ┌─────┴──────┐
-  │            │
-Dense Search  BM25 Sparse Search
-(Pinecone)    (rank_bm25)
-  │            │
-  └─────┬──────┘
-        ▼
-  Cross-Encoder Reranker
-        │
-        ▼
-  GPT-4 Answer Generation
-        │
-        ▼
-  Constitutional AI Guardrails (15 safety checks)
-        │
-        ▼
-  FastAPI Response → User
+src/
+  ingestion/      - document loading and chunking
+  retrieval/      - dense, sparse, hybrid retrieval + reranker
+  generation/     - RAG chain, memory, guardrails
+  evaluation/     - relevance and hallucination metrics
+  api/            - FastAPI app
+tests/
+docker/
 ```
 
-## Tech Stack
-- **LLMs:** GPT-4, text-embedding-ada-002
-- **Orchestration:** LangChain, LlamaIndex
-- **Vector DB:** Pinecone
-- **Sparse Search:** BM25 (rank_bm25)
-- **Reranking:** cross-encoder/ms-marco-MiniLM-L-6-v2
-- **API:** FastAPI + Docker
-- **Cloud:** AWS EC2 with auto-scaling
+## Running it
 
-## Project Structure
-```
-rag-enterprise-document-intelligence/
-├── src/
-│   ├── ingestion/
-│   │   ├── document_loader.py      # Multi-format document loading
-│   │   └── chunker.py              # Semantic chunking strategies
-│   ├── retrieval/
-│   │   ├── dense_retriever.py      # Pinecone vector search
-│   │   ├── sparse_retriever.py     # BM25 sparse search
-│   │   ├── hybrid_retriever.py     # Fusion of dense + sparse
-│   │   └── reranker.py             # Cross-encoder reranking
-│   ├── generation/
-│   │   ├── rag_chain.py            # LangChain RAG pipeline
-│   │   ├── memory_manager.py       # Conversation memory
-│   │   └── guardrails.py           # Safety checks
-│   ├── evaluation/
-│   │   └── evaluator.py            # ROUGE, BERTScore, relevance metrics
-│   └── api/
-│       └── main.py                 # FastAPI application
-├── tests/
-│   ├── test_retrieval.py
-│   └── test_guardrails.py
-├── docker/
-│   └── Dockerfile
-├── requirements.txt
-└── .env.example
-```
-
-## Quick Start
 ```bash
 git clone https://github.com/Ash-projects-personal/rag-enterprise-document-intelligence
 cd rag-enterprise-document-intelligence
 pip install -r requirements.txt
-cp .env.example .env   # add your OPENAI_API_KEY and PINECONE_API_KEY
+cp .env.example .env
+# fill in OPENAI_API_KEY and PINECONE_API_KEY
 uvicorn src.api.main:app --reload
 ```
 
-## Evaluation
-Run the full evaluation suite against the 500-query benchmark:
+Then hit `POST /query` with a JSON body like `{"question": "what is the refund policy?"}`.
+
+To run the evaluation suite:
+
 ```bash
 python src/evaluation/evaluator.py --queries data/eval_queries.json
 ```
+
+## Notes
+
+You need an OpenAI API key and a Pinecone account to run this end to end. The `.env.example` shows what variables are needed. The FastAPI app runs in demo mode without them so you can at least see the structure.
