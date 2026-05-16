@@ -1,5 +1,7 @@
 # rag-enterprise-document-intelligence
 
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/) [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/) [![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)](docker/)
 I built this locally in VS Code over a few weeks and am pushing it to GitHub now to keep everything in one place.
 
 This is a RAG pipeline that lets you ask questions over a large collection of enterprise documents — PDFs, Word docs, HTML pages. The main idea was to get away from basic vector search and actually combine dense retrieval with BM25, then rerank the results before sending them to GPT-4. Made a big difference in answer quality.
