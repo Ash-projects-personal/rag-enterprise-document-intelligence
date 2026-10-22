@@ -1,0 +1,120 @@
+rag-enterprise-document-intelligence evaluation run
+python: 3.12.3  platform: Linux-7.0.0-39-generic-x86_64-with-glibc2.39
+machine cpus: 2
+index: {'embedding_model': 'sentence-transformers/all-MiniLM-L6-v2', 'embedding_dim': 384, 'num_chunks': 2601, 'num_documents': 60, 'chunk_max_words': 180, 'chunk_overlap_words': 40}
+evaluation questions: 300
+  100/300 questions done
+  200/300 questions done
+  300/300 questions done
+{
+  "dataset": {
+    "dataset": "SQuAD v1.1 (Stanford Question Answering Dataset), training split",
+    "source_url": "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json",
+    "license": "CC BY-SA 4.0",
+    "seed": 13,
+    "articles_in_full_train_split": 442,
+    "articles_sampled": 60,
+    "questions_available_for_sampled_articles": 10997,
+    "eval_questions_sampled": 300,
+    "article_titles_sampled": [
+      "Eritrea",
+      "Franco-Prussian_War",
+      "Russian_Soviet_Federative_Socialist_Republic",
+      "Tuvalu",
+      "Westminster_Abbey",
+      "Cotton",
+      "Quran",
+      "East_India_Company",
+      "Renewable_energy_commercialization",
+      "Charleston,_South_Carolina",
+      "Dutch_Republic",
+      "Pub",
+      "Southeast_Asia",
+      "Canadian_football",
+      "Aspirated_consonant",
+      "Namibia",
+      "Web_browser",
+      "Diarrhea",
+      "States_of_Germany",
+      "Friedrich_Hayek",
+      "Alps",
+      "John,_King_of_England",
+      "CBC_Television",
+      "Virgil",
+      "Plymouth",
+      "Affirmative_action_in_the_United_States",
+      "Federal_Aviation_Administration",
+      "Videoconferencing",
+      "Bacteria",
+      "Tristan_da_Cunha",
+      "United_Nations_Population_Fund",
+      "Umayyad_Caliphate",
+      "Estonian_language",
+      "Uranium",
+      "Lancashire",
+      "Josip_Broz_Tito",
+      "Carnival",
+      "England_national_football_team",
+      "Heian_period",
+      "Windows_8",
+      "East_Prussia",
+      "Marshall_Islands",
+      "Supreme_court",
+      "New_Haven,_Connecticut",
+      "Northwestern_University",
+      "Jews",
+      "Richard_Feynman",
+      "Himachal_Pradesh",
+      "Professional_wrestling",
+      "George_VI",
+      "Race_and_ethnicity_in_the_United_States_Census",
+      "British_Empire",
+      "Guinea-Bissau",
+      "Universal_Studios",
+      "Pharmaceutical_industry",
+      "Tucson,_Arizona",
+      "Prime_minister",
+      "Saint_Barth%C3%A9lemy",
+      "Labour_Party_(UK)",
+      "Nigeria"
+    ]
+  },
+  "index": {
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "embedding_dim": 384,
+    "num_chunks": 2601,
+    "num_documents": 60,
+    "chunk_max_words": 180,
+    "chunk_overlap_words": 40
+  },
+  "num_questions": 300,
+  "retrieval_fused": {
+    "recall@1": 0.8033,
+    "recall@5": 0.9467,
+    "recall@10": 0.9767,
+    "recall@20": 0.9867,
+    "mrr": 0.867
+  },
+  "retrieval_reranked": {
+    "recall@1": 0.9033,
+    "recall@5": 0.98,
+    "mrr": 0.9355
+  },
+  "answering_extractive": {
+    "method": "answer sentence picked from the top reranked passage by token overlap F1 with the question content words; scored against the SQuAD gold answer",
+    "gold_answer_in_top_passage_rate": 0.9367,
+    "answer_sentence_token_f1_mean": 0.1543,
+    "answer_sentence_exact_match_rate": 0.0
+  },
+  "latency_seconds_full_query": {
+    "mean": 9.0145,
+    "p95": 13.0339,
+    "max": 16.7189
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-39-generic-x86_64-with-glibc2.39",
+    "cpus": 2
+  },
+  "total_run_seconds": 2711.1
+}
